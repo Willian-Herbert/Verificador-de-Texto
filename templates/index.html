@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Comparador de Textos</title>
+</head>
+<body>
+  <h1>Comparador de Textos</h1>
+  <form method="post" enctype="multipart/form-data">
+    <label for="arquivo1">Arquivo 1:</label>
+    <input type="file" name="arquivo1" accept=".txt, .pdf" required><br><br>
+    <label for="arquivo2">Arquivo 2:</label>
+    <input type="file" name="arquivo2" accept=".txt, .pdf" required><br><br>
+    <input type="submit" value="Comparar">
+  </form>
+
+  {% if resultado is not none %}
+
+    <h3>Análise de possíveis características de IA nos textos:</h3>
+    <div>
+        <strong>Arquivo 1:</strong><br>
+        Diversidade Lexical: {{ analise_ia1.diversidade_lexical }}<br>
+        Palavra mais comum: "{{ analise_ia1.palavra_mais_comum }}" ({{ analise_ia1.frequencia_mais_comum }} vezes)<br>
+        {{ analise_ia1.mensagem }}
+    </div>
+    <br>
+    <div>
+        <strong>Arquivo 2:</strong><br>
+        Diversidade Lexical: {{ analise_ia2.diversidade_lexical }}<br>
+        Palavra mais comum: "{{ analise_ia2.palavra_mais_comum }}" ({{ analise_ia2.frequencia_mais_comum }} vezes)<br>
+        {{ analise_ia2.mensagem }}
+    </div>
+
+    <h2>Índice de Correlação: {{ (resultado * 100) | round(2) }}%</h2>
+
+    {% if trechos %}
+      <h3>Trechos mais similares:</h3>
+      <ol>
+        {% for sim, s1, s2 in trechos %}
+          <li>
+            <p><strong>Similaridade:</strong> {{ (sim * 100) | round(2) }}%</p>
+            <p><strong>Texto 1:</strong> {{ s1 }}</p>
+            <p><strong>Texto 2:</strong> {{ s2 }}</p>
+            <hr>
+          </li>
+        {% endfor %}
+      </ol>
+    {% endif %}
+
+    <form action="{{ url_for('baixar_relatorio') }}" method="get">
+      <button type="submit">Baixar Relatório em PDF</button>
+    </form>
+  {% endif %}
+</body>
+</html>

@@ -100,7 +100,23 @@
           </div>
         </div>
 
-        <h3>Análise Avançada de Detecção de IA:</h3>
+        <!-- Aviso sobre precisão da detecção de IA -->
+        <div class="warning-banner">
+          <div class="warning-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="warning-content">
+            <h4><i class="fas fa-info-circle"></i> Importante: Sobre a Detecção de IA</h4>
+            <p>
+              <strong>A detecção de IA é uma medição de possibilidade, não uma certeza absoluta.</strong> 
+              Os resultados indicam a probabilidade de um texto ter sido gerado por IA com base em padrões linguísticos, 
+              mas não substituem a análise humana especializada. Use estes resultados como uma ferramenta de apoio, 
+              não como uma conclusão definitiva.
+            </p>
+          </div>
+        </div>
+
+        <h3>🤖 Detecção de IA:</h3>
         
         <div class="ai-analysis-grid">
           <div class="ai-analysis-card {% if analise_ia1.confianca == 'Alta' %}alto-risco{% elif analise_ia1.confianca == 'Média' %}medio-risco{% else %}baixo-risco{% endif %}">
@@ -134,10 +150,6 @@
                 <div class="metric-item">
                   <div>Variação de Sentenças</div>
                   <div>{{ analise_ia1.detalhes.variacao_sentencas }}</div>
-                </div>
-                <div class="metric-item">
-                  <div>Densidade de Conectivos</div>
-                  <div>{{ analise_ia1.detalhes.densidade_conectivos }}%</div>
                 </div>
                 <div class="metric-item">
                   <div>Repetição Estrutural</div>
@@ -192,10 +204,6 @@
                   <div>{{ analise_ia2.detalhes.variacao_sentencas }}</div>
                 </div>
                 <div class="metric-item">
-                  <div>Densidade de Conectivos</div>
-                  <div>{{ analise_ia2.detalhes.densidade_conectivos }}%</div>
-                </div>
-                <div class="metric-item">
                   <div>Repetição Estrutural</div>
                   <div>{{ analise_ia2.detalhes.repeticao_estrutural }}%</div>
                 </div>
@@ -241,11 +249,13 @@
           </div>
         {% endif %}
 
-        <form action="{{ url_for('baixar_relatorio') }}" method="get">
-          <button type="submit" class="btn btn-secondary">
-            <i class="fas fa-file-pdf"></i> Baixar Relatório em PDF
-          </button>
-        </form>
+        <div class="centered-button-container">
+          <form action="{{ url_for('baixar_relatorio') }}" method="get">
+            <button type="submit" class="btn btn-secondary">
+              <i class="fas fa-file-pdf"></i> Baixar Relatório em PDF
+            </button>
+          </form>
+        </div>
       </div>
     {% endif %}
 
@@ -253,6 +263,22 @@
     {% if analise_individual and modo == 'individual' %}
       <div class="results-section">
         <h2>🤖 Resultado da Análise Individual de IA</h2>
+        
+        <!-- Aviso sobre precisão da detecção de IA -->
+        <div class="warning-banner">
+          <div class="warning-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="warning-content">
+            <h4><i class="fas fa-info-circle"></i> Importante: Sobre a Detecção de IA</h4>
+            <p>
+              <strong>A detecção de IA é uma medição de possibilidade, não uma certeza absoluta.</strong> 
+              Os resultados indicam a probabilidade de um texto ter sido gerado por IA com base em padrões linguísticos, 
+              mas não substituem a análise humana especializada. Use estes resultados como uma ferramenta de apoio, 
+              não como uma conclusão definitiva.
+            </p>
+          </div>
+        </div>
         
         <div class="ai-analysis-card {% if analise_individual.confianca == 'Alta' %}alto-risco{% elif analise_individual.confianca == 'Média' %}medio-risco{% else %}baixo-risco{% endif %}">
             <div class="card-header">
@@ -287,10 +313,6 @@
                 <div>{{ analise_individual.detalhes.variacao_sentencas }}</div>
               </div>
               <div class="metric-item">
-                <div>Densidade de Conectivos</div>
-                <div>{{ analise_individual.detalhes.densidade_conectivos }}%</div>
-              </div>
-              <div class="metric-item">
                 <div>Repetição Estrutural</div>
                 <div>{{ analise_individual.detalhes.repeticao_estrutural }}%</div>
               </div>
@@ -310,11 +332,13 @@
             {% endif %}
         </div>
 
-        <form action="{{ url_for('baixar_relatorio_individual') }}" method="get">
-          <button type="submit" class="btn btn-secondary">
-            <i class="fas fa-file-pdf"></i> Baixar Relatório Individual em PDF
-          </button>
-        </form>
+        <div class="centered-button-container">
+          <form action="{{ url_for('baixar_relatorio_individual') }}" method="get">
+            <button type="submit" class="btn btn-secondary">
+              <i class="fas fa-file-pdf"></i> Baixar Relatório Individual em PDF
+            </button>
+          </form>
+        </div>
       </div>
     {% endif %}
 
@@ -341,6 +365,11 @@
       </div>
       
       <div class="modal-body">
+        <div class="warning-note">
+          <i class="fas fa-exclamation-circle"></i>
+          <strong>Lembre-se:</strong> Todas as métricas são indicativas e não garantem detecção 100% precisa de IA.
+        </div>
+        
         <div class="metric-explanation">
           <div class="metric-name">
             <i class="fas fa-book"></i>
@@ -360,17 +389,6 @@
           <div class="metric-description">
             Analisa como o tamanho das frases varia ao longo do texto. IA frequentemente produz frases de tamanho similar.
             <br><strong>Interpretação:</strong> Baixa variação pode sugerir geração artificial.
-          </div>
-        </div>
-
-        <div class="metric-explanation">
-          <div class="metric-name">
-            <i class="fas fa-link"></i>
-            <strong>Densidade de Conectivos</strong>
-          </div>
-          <div class="metric-description">
-            Percentual de palavras conectivas (e, mas, portanto, etc.) no texto. IA tende a usar mais conectivos para criar fluidez.
-            <br><strong>Interpretação:</strong> Alta densidade (> 15%) pode indicar IA.
           </div>
         </div>
 

@@ -162,7 +162,7 @@ def limpar_texto(texto):
 
 def analisar_texto_ia(texto):
     """Análise avançada para detectar IA com progresso super detalhado"""
-    tracker = ProcessTracker("ANÁLISE DE IA", 10)
+    tracker = ProcessTracker("ANÁLISE DE IA", 9)
     
     # Etapa 1: Tokenização
     tracker.next_step("Tokenizando texto", f"Analisando {len(texto):,} caracteres")
@@ -207,16 +207,8 @@ def analisar_texto_ia(texto):
     else:
         variacao_sentencas = 0
     
-    # Etapa 6: Conectivos de IA
-    tracker.next_step("Detectando conectivos de IA", f"{total_sentencas} sentenças (variação: {variacao_sentencas:.3f})")
-    conectivos_ia = ['portanto', 'além disso', 'por outro lado', 'em primeiro lugar', 'em segundo lugar', 
-                     'finalmente', 'consequentemente', 'dessa forma', 'assim sendo', 'nesse contexto',
-                     'vale destacar', 'é importante mencionar', 'cabe ressaltar', 'por sua vez']
-    conectivos_encontrados = [palavra for palavra in palavras_completas if palavra in conectivos_ia]
-    densidade_conectivos = len(conectivos_encontrados) / total_palavras_completas
-    
-    # Etapa 7: Repetição estrutural
-    tracker.next_step("Analisando estrutura", f"{len(conectivos_encontrados)} conectivos encontrados ({densidade_conectivos:.4f})")
+    # Etapa 6: Repetição estrutural
+    tracker.next_step("Analisando estrutura", f"{total_sentencas} sentenças (variação: {variacao_sentencas:.3f})")
     palavras_iniciais = []
     for sentenca in sentencas:
         palavras_sent = sentenca.split()
@@ -229,12 +221,12 @@ def analisar_texto_ia(texto):
     else:
         repeticao_estrutural = 0
     
-    # Etapa 8: Complexidade lexical
+    # Etapa 7: Complexidade lexical
     tracker.next_step("Calculando complexidade lexical", f"Repetição estrutural: {repeticao_estrutural:.3f}")
     palavras_complexas = [p for p in palavras_filtradas if len(p) > 6]
     complexidade_lexical = len(palavras_complexas) / total_palavras_filtradas
     
-    # Etapa 9: Uniformidade verbal
+    # Etapa 8: Uniformidade verbal
     tracker.next_step("Analisando uniformidade verbal", f"{len(palavras_complexas)} palavras complexas ({complexidade_lexical:.3f})")
     verbos_presente = ['é', 'são', 'está', 'estão', 'tem', 'têm', 'pode', 'podem', 'deve', 'devem']
     verbos_passado = ['foi', 'foram', 'estava', 'estavam', 'tinha', 'tinham', 'podia', 'podiam']
@@ -250,7 +242,7 @@ def analisar_texto_ia(texto):
     else:
         uniformidade_verbal = 0
     
-    # Etapa 10: Cálculo final
+    # Etapa 9: Cálculo final
     tracker.next_step("Calculando pontuação final", f"Verbos: P:{freq_presente} Pa:{freq_passado} F:{freq_futuro} (unif: {uniformidade_verbal:.3f})")
     
     # Análise de palavras típicas de IA
@@ -264,10 +256,9 @@ def analisar_texto_ia(texto):
         'baixa_diversidade': (1 - diversidade_lexical) * 25,
         'repeticao_excessiva': repeticao_excessiva * 20,
         'baixa_variacao_sentencas': (1 - min(variacao_sentencas, 1)) * 15,
-        'densidade_conectivos': densidade_conectivos * 100 * 15,
-        'repeticao_estrutural': repeticao_estrutural * 10,
-        'freq_palavras_ia': freq_palavras_ia * 100 * 10,
-        'uniformidade_verbal': uniformidade_verbal * 5
+        'repeticao_estrutural': repeticao_estrutural * 15,
+        'freq_palavras_ia': freq_palavras_ia * 100 * 15,
+        'uniformidade_verbal': uniformidade_verbal * 10
     }
     
     # Log detalhado de cada indicador
@@ -298,7 +289,6 @@ def analisar_texto_ia(texto):
         'palavra_mais_comum': palavra_mais_comum,
         'frequencia_mais_comum': freq_mais_comum,
         'variacao_sentencas': round(variacao_sentencas, 3),
-        'densidade_conectivos': round(densidade_conectivos * 100, 2),
         'repeticao_estrutural': round(repeticao_estrutural * 100, 2),
         'complexidade_lexical': round(complexidade_lexical * 100, 2),
         'uniformidade_verbal': round(uniformidade_verbal * 100, 2),
@@ -755,7 +745,6 @@ def gerar_pdf_individual(analise):
         conteudo_detalhes = f"""
 Diversidade Lexical: {detalhes.get('diversidade_lexical', 'N/A')}
 Variação de Sentenças: {detalhes.get('variacao_sentencas', 'N/A')}
-Densidade de Conectivos: {detalhes.get('densidade_conectivos', 'N/A')}%
 Repetição Estrutural: {detalhes.get('repeticao_estrutural', 'N/A')}%
 Complexidade Lexical: {detalhes.get('complexidade_lexical', 'N/A')}
 Uniformidade Verbal: {detalhes.get('uniformidade_verbal', 'N/A')}

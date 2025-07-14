@@ -2,54 +2,484 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Comparador de Textos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Text Analyzer - Comparador e Detector de IA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h1>Comparador de Textos</h1>
-  <form method="post" enctype="multipart/form-data">
-    <label for="arquivo1">Arquivo 1:</label>
-    <input type="file" name="arquivo1" accept=".txt, .pdf" required><br><br>
-    <label for="arquivo2">Arquivo 2:</label>
-    <input type="file" name="arquivo2" accept=".txt, .pdf" required><br><br>
-    <input type="submit" value="Comparar">
-  </form>
-
-  {% if resultado is not none %}
-
-    <h3>Análise de possíveis características de IA nos textos:</h3>
-    <div>
-        <strong>Arquivo 1:</strong><br>
-        Diversidade Lexical: {{ analise_ia1.diversidade_lexical }}<br>
-        Palavra mais comum: "{{ analise_ia1.palavra_mais_comum }}" ({{ analise_ia1.frequencia_mais_comum }} vezes)<br>
-        {{ analise_ia1.mensagem }}
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Comparador de Textos e Detector de IA</h1>
+      <p>Uma ferramenta poderosa para comparar similaridade de textos e detectar conteúdo gerado por IA.</p>
     </div>
-    <br>
-    <div>
-        <strong>Arquivo 2:</strong><br>
-        Diversidade Lexical: {{ analise_ia2.diversidade_lexical }}<br>
-        Palavra mais comum: "{{ analise_ia2.palavra_mais_comum }}" ({{ analise_ia2.frequencia_mais_comum }} vezes)<br>
-        {{ analise_ia2.mensagem }}
+    
+    <!-- Navegação entre abas -->
+    <div class="nav-container">
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showTab('comparar')">
+          <i class="fas fa-chart-line"></i> Comparar Dois Textos
+        </button>
+        <button class="nav-tab" onclick="showTab('analisar')">
+          <i class="fas fa-robot"></i> Analisar IA Individual
+        </button>
+      </div>
+    </div>
+    
+    <!-- Área de conteúdo das abas -->
+    <div class="content">
+      <!-- Aba de Comparação -->
+      <div id="comparar" class="tab-content active">
+        <div class="form-card">
+          <div class="form-title">
+            <i class="fas fa-file-alt"></i> Comparação de Similaridade entre Dois Textos
+          </div>
+          <form method="post" enctype="multipart/form-data" action="{{ url_for('index') }}">
+            <input type="hidden" name="modo" value="comparar">
+            
+            <label for="arquivo1" class="upload-label">Arquivo 1:</label>
+            <div id="dropArea1" class="drag-drop-area">
+              <div class="drag-drop-icon">📁</div>
+              <div class="drag-drop-text">Arraste o arquivo 1 aqui ou clique para selecionar</div>
+              <small class="drag-drop-subtext">Arquivos aceitos: PDF, TXT</small>
+            </div>
+            <input type="file" id="arquivo1" name="arquivo1" accept=".txt,.pdf" required class="file-input-hidden">
+            
+            <label for="arquivo2" class="upload-label">Arquivo 2:</label>
+            <div id="dropArea2" class="drag-drop-area">
+              <div class="drag-drop-icon">📁</div>
+              <div class="drag-drop-text">Arraste o arquivo 2 aqui ou clique para selecionar</div>
+              <small class="drag-drop-subtext">Arquivos aceitos: PDF, TXT</small>
+            </div>
+            <input type="file" id="arquivo2" name="arquivo2" accept=".txt,.pdf" required class="file-input-hidden">
+            
+            <br><br>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-search"></i> Comparar Textos
+            </button>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Aba de Análise Individual -->
+      <div id="analisar" class="tab-content">
+        <div class="form-card">
+          <div class="form-title">
+            <i class="fas fa-search-plus"></i> Análise Individual de Detecção de IA
+          </div>
+          <form method="post" enctype="multipart/form-data" action="{{ url_for('analisar_individual') }}">
+            
+            <label for="arquivo" class="upload-label">Selecionar arquivo para análise:</label>
+            <div id="dropAreaIndividual" class="drag-drop-area">
+              <div class="drag-drop-icon">📁</div>
+              <div class="drag-drop-text">Arraste um arquivo aqui ou clique para selecionar</div>
+              <small class="drag-drop-subtext">Arquivos aceitos: PDF, TXT</small>
+            </div>
+            <input type="file" id="arquivo" name="arquivo" accept=".txt,.pdf" required class="file-input-hidden">
+            
+            <br><br>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-check"></i> Analisar Texto
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
 
-    <h2>Índice de Correlação: {{ (resultado * 100) | round(2) }}%</h2>
+    <!-- Resultados da Comparação -->
+    {% if resultado is not none and modo == 'comparar' %}
+      <div class="results-section">
+        <div class="similarity-result">
+          <div class="similarity-percentage">
+            {{ (resultado * 100) | round(2) }}%
+          </div>
+          <div class="similarity-label">
+            Índice de Correlação
+          </div>
+        </div>
 
-    {% if trechos %}
-      <h3>Trechos mais similares:</h3>
-      <ol>
-        {% for sim, s1, s2 in trechos %}
-          <li>
-            <p><strong>Similaridade:</strong> {{ (sim * 100) | round(2) }}%</p>
-            <p><strong>Texto 1:</strong> {{ s1 }}</p>
-            <p><strong>Texto 2:</strong> {{ s2 }}</p>
-            <hr>
-          </li>
-        {% endfor %}
-      </ol>
+        <h3>Análise Avançada de Detecção de IA:</h3>
+        
+        <div class="ai-analysis-grid">
+          <div class="ai-analysis-card {% if analise_ia1.confianca == 'Alta' %}alto-risco{% elif analise_ia1.confianca == 'Média' %}medio-risco{% else %}baixo-risco{% endif %}">
+              <div class="card-header">
+                <div class="card-title">📄 Arquivo 1</div>
+                <div class="confidence-badge">
+                  {{ analise_ia1.confianca }}
+                </div>
+              </div>
+              
+              <div class="probability-display">
+                {{ analise_ia1.probabilidade_ia }}%
+              </div>
+              
+              <div class="ai-message">
+                {{ analise_ia1.mensagem }}
+              </div>
+              
+              {% if analise_ia1.detalhes %}
+              <div class="metrics-details">
+                <div class="metrics-title">
+                  Métricas Detalhadas:
+                  <button type="button" class="help-button" onclick="openMetricsModal()">
+                    <i class="fas fa-question-circle"></i>
+                  </button>
+                </div>
+                <div class="metric-item">
+                  <div>Diversidade Lexical</div>
+                  <div>{{ analise_ia1.detalhes.diversidade_lexical }}</div>
+                </div>
+                <div class="metric-item">
+                  <div>Variação de Sentenças</div>
+                  <div>{{ analise_ia1.detalhes.variacao_sentencas }}</div>
+                </div>
+                <div class="metric-item">
+                  <div>Densidade de Conectivos</div>
+                  <div>{{ analise_ia1.detalhes.densidade_conectivos }}%</div>
+                </div>
+                <div class="metric-item">
+                  <div>Repetição Estrutural</div>
+                  <div>{{ analise_ia1.detalhes.repeticao_estrutural }}%</div>
+                </div>
+                <div class="metric-item">
+                  <div>Complexidade Lexical</div>
+                  <div>{{ analise_ia1.detalhes.complexidade_lexical }}%</div>
+                </div>
+                <div class="metric-item">
+                  <div>Uniformidade Verbal</div>
+                  <div>{{ analise_ia1.detalhes.uniformidade_verbal }}%</div>
+                </div>
+                <div class="metric-item">
+                  <div>Palavra mais comum</div>
+                  <div>"{{ analise_ia1.detalhes.palavra_mais_comum }}" ({{ analise_ia1.detalhes.frequencia_mais_comum }} vezes)</div>
+                </div>
+              </div>
+              {% endif %}
+          </div>
+          
+          <div class="ai-analysis-card {% if analise_ia2.confianca == 'Alta' %}alto-risco{% elif analise_ia2.confianca == 'Média' %}medio-risco{% else %}baixo-risco{% endif %}">
+              <div class="card-header">
+                <div class="card-title">📄 Arquivo 2</div>
+                <div class="confidence-badge">
+                  {{ analise_ia2.confianca }}
+                </div>
+              </div>
+              
+              <div class="probability-display">
+                {{ analise_ia2.probabilidade_ia }}%
+              </div>
+              
+              <div class="ai-message">
+                {{ analise_ia2.mensagem }}
+              </div>
+              
+              {% if analise_ia2.detalhes %}
+              <div class="metrics-details">
+                <div class="metrics-title">
+                  Métricas Detalhadas:
+                  <button type="button" class="help-button" onclick="openMetricsModal()">
+                    <i class="fas fa-question-circle"></i>
+                  </button>
+                </div>
+                <div class="metric-item">
+                  <div>Diversidade Lexical</div>
+                  <div>{{ analise_ia2.detalhes.diversidade_lexical }}</div>
+                </div>
+                <div class="metric-item">
+                  <div>Variação de Sentenças</div>
+                  <div>{{ analise_ia2.detalhes.variacao_sentencas }}</div>
+                </div>
+                <div class="metric-item">
+                  <div>Densidade de Conectivos</div>
+                  <div>{{ analise_ia2.detalhes.densidade_conectivos }}%</div>
+                </div>
+                <div class="metric-item">
+                  <div>Repetição Estrutural</div>
+                  <div>{{ analise_ia2.detalhes.repeticao_estrutural }}%</div>
+                </div>
+                <div class="metric-item">
+                  <div>Complexidade Lexical</div>
+                  <div>{{ analise_ia2.detalhes.complexidade_lexical }}%</div>
+                </div>
+                <div class="metric-item">
+                  <div>Uniformidade Verbal</div>
+                  <div>{{ analise_ia2.detalhes.uniformidade_verbal }}%</div>
+                </div>
+                <div class="metric-item">
+                  <div>Palavra mais comum</div>
+                  <div>"{{ analise_ia2.detalhes.palavra_mais_comum }}" ({{ analise_ia2.detalhes.frequencia_mais_comum }} vezes)</div>
+                </div>
+              </div>
+              {% endif %}
+          </div>
+        </div>
+
+        {% if trechos %}
+          <div class="similar-sections">
+            <h3>
+              <i class="fas fa-bolt"></i> Trechos mais similares:
+            </h3>
+            {% for sim, s1, s2 in trechos %}
+              <div class="similar-item">
+                <div class="similarity-header">
+                  <h4>Trecho {{ loop.index }}: {{ (sim * 100) | round(1) }}% de similaridade</h4>
+                </div>
+                <div class="text-comparison">
+                  <div class="text-block">
+                    <div class="text-label">Texto 1</div>
+                    <div>{{ s1 }}</div>
+                  </div>
+                  <div class="text-block">
+                    <div class="text-label">Texto 2</div>
+                    <div>{{ s2 }}</div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <form action="{{ url_for('baixar_relatorio') }}" method="get">
+          <button type="submit" class="btn btn-secondary">
+            <i class="fas fa-file-pdf"></i> Baixar Relatório em PDF
+          </button>
+        </form>
+      </div>
     {% endif %}
 
-    <form action="{{ url_for('baixar_relatorio') }}" method="get">
-      <button type="submit">Baixar Relatório em PDF</button>
-    </form>
-  {% endif %}
+    <!-- Resultados da Análise Individual -->
+    {% if analise_individual and modo == 'individual' %}
+      <div class="results-section">
+        <h2>🤖 Resultado da Análise Individual de IA</h2>
+        
+        <div class="ai-analysis-card {% if analise_individual.confianca == 'Alta' %}alto-risco{% elif analise_individual.confianca == 'Média' %}medio-risco{% else %}baixo-risco{% endif %}">
+            <div class="card-header">
+              <div class="card-title">📄 Arquivo Analisado</div>
+              <div class="confidence-badge">
+                {{ analise_individual.confianca }}
+              </div>
+            </div>
+            
+            <div class="probability-display">
+              {{ analise_individual.probabilidade_ia }}%
+            </div>
+            
+            <div class="ai-message">
+              {{ analise_individual.mensagem }}
+            </div>
+            
+            {% if analise_individual.detalhes %}
+            <div class="metrics-details">
+              <div class="metrics-title">
+                Métricas Detalhadas:
+                <button type="button" class="help-button" onclick="openMetricsModal()">
+                  <i class="fas fa-question-circle"></i>
+                </button>
+              </div>
+              <div class="metric-item">
+                <div>Diversidade Lexical</div>
+                <div>{{ analise_individual.detalhes.diversidade_lexical }}</div>
+              </div>
+              <div class="metric-item">
+                <div>Variação de Sentenças</div>
+                <div>{{ analise_individual.detalhes.variacao_sentencas }}</div>
+              </div>
+              <div class="metric-item">
+                <div>Densidade de Conectivos</div>
+                <div>{{ analise_individual.detalhes.densidade_conectivos }}%</div>
+              </div>
+              <div class="metric-item">
+                <div>Repetição Estrutural</div>
+                <div>{{ analise_individual.detalhes.repeticao_estrutural }}%</div>
+              </div>
+              <div class="metric-item">
+                <div>Complexidade Lexical</div>
+                <div>{{ analise_individual.detalhes.complexidade_lexical }}%</div>
+              </div>
+              <div class="metric-item">
+                <div>Uniformidade Verbal</div>
+                <div>{{ analise_individual.detalhes.uniformidade_verbal }}%</div>
+              </div>
+              <div class="metric-item">
+                <div>Palavra mais comum</div>
+                <div>"{{ analise_individual.detalhes.palavra_mais_comum }}" ({{ analise_individual.detalhes.frequencia_mais_comum }} vezes)</div>
+              </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <form action="{{ url_for('baixar_relatorio_individual') }}" method="get">
+          <button type="submit" class="btn btn-secondary">
+            <i class="fas fa-file-pdf"></i> Baixar Relatório Individual em PDF
+          </button>
+        </form>
+      </div>
+    {% endif %}
+
+    {% if erro %}
+      <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>Erro:</strong> {{ erro }}
+      </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Modal de Informações sobre Métricas de IA -->
+  <div id="metricsModal" class="modal-overlay" onclick="closeMetricsModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          <i class="fas fa-info-circle"></i>
+          Explicação das Métricas de Detecção de IA
+        </h2>
+        <button class="modal-close" onclick="closeMetricsModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="metric-explanation">
+          <div class="metric-name">
+            <i class="fas fa-book"></i>
+            <strong>Diversidade Lexical</strong>
+          </div>
+          <div class="metric-description">
+            Mede a variedade de palavras únicas em relação ao total de palavras. Textos de IA tendem a ter menor diversidade, repetindo palavras frequentemente.
+            <br><strong>Interpretação:</strong> Valores baixos (< 0.5) podem indicar IA.
+          </div>
+        </div>
+
+        <div class="metric-explanation">
+          <div class="metric-name">
+            <i class="fas fa-chart-line"></i>
+            <strong>Variação de Sentenças</strong>
+          </div>
+          <div class="metric-description">
+            Analisa como o tamanho das frases varia ao longo do texto. IA frequentemente produz frases de tamanho similar.
+            <br><strong>Interpretação:</strong> Baixa variação pode sugerir geração artificial.
+          </div>
+        </div>
+
+        <div class="metric-explanation">
+          <div class="metric-name">
+            <i class="fas fa-link"></i>
+            <strong>Densidade de Conectivos</strong>
+          </div>
+          <div class="metric-description">
+            Percentual de palavras conectivas (e, mas, portanto, etc.) no texto. IA tende a usar mais conectivos para criar fluidez.
+            <br><strong>Interpretação:</strong> Alta densidade (> 15%) pode indicar IA.
+          </div>
+        </div>
+
+        <div class="metric-explanation">
+          <div class="metric-name">
+            <i class="fas fa-sync-alt"></i>
+            <strong>Repetição Estrutural</strong>
+          </div>
+          <div class="metric-description">
+            Detecta padrões repetitivos na estrutura das frases. IA frequentemente repete estruturas gramaticais.
+            <br><strong>Interpretação:</strong> Alta repetição (> 20%) sugere possível IA.
+          </div>
+        </div>
+
+        <div class="metric-explanation">
+          <div class="metric-name">
+            <i class="fas fa-brain"></i>
+            <strong>Complexidade Lexical</strong>
+          </div>
+          <div class="metric-description">
+            Avalia a sofisticação do vocabulário usado. Mede palavras complexas e técnicas no texto.
+            <br><strong>Interpretação:</strong> IA pode ter complexidade artificial ou muito baixa.
+          </div>
+        </div>
+
+        <div class="metric-explanation">
+          <div class="metric-name">
+            <i class="fas fa-balance-scale"></i>
+            <strong>Uniformidade Verbal</strong>
+          </div>
+          <div class="metric-description">
+            Analisa se os tempos verbais são consistentes ao longo do texto. IA tende a manter uniformidade excessiva.
+            <br><strong>Interpretação:</strong> Uniformidade muito alta pode indicar geração artificial.
+          </div>
+        </div>
+
+        <div class="metric-explanation">
+          <div class="metric-name">
+            <i class="fas fa-star"></i>
+            <strong>Palavra Mais Comum</strong>
+          </div>
+          <div class="metric-description">
+            Identifica a palavra mais frequente e quantas vezes aparece. Ajuda a entender padrões de repetição.
+            <br><strong>Interpretação:</strong> Repetições excessivas podem sugerir limitações de IA.
+          </div>
+        </div>
+
+        <div class="confidence-explanation">
+          <h3><i class="fas fa-shield-alt"></i> Níveis de Confiança</h3>
+          <div class="confidence-levels">
+            <div class="confidence-item baixo-risco">
+              <strong>Baixa:</strong> 0-30% - Provavelmente texto humano
+            </div>
+            <div class="confidence-item medio-risco">
+              <strong>Média:</strong> 31-70% - Incerto, análise manual recomendada
+            </div>
+            <div class="confidence-item alto-risco">
+              <strong>Alta:</strong> 71-100% - Provavelmente gerado por IA
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeMetricsModal()">
+          <i class="fas fa-check"></i> Entendi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay (exemplo de uso) -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-container">
+      <div class="loading-title">
+        <div class="loading-spinner"></div>
+        Processando arquivos...
+      </div>
+      
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+        <div class="progress-text">0% Completo</div>
+        <div class="progress-details">Iniciando processamento...</div>
+      </div>
+      
+      <div class="step-list">
+        <div class="step-item step-pending">
+          <div class="step-icon">1</div>
+          <div>Extraindo texto dos arquivos</div>
+        </div>
+        <div class="step-item step-pending">
+          <div class="step-icon">2</div>
+          <div>Calculando similaridade</div>
+        </div>
+        <div class="step-item step-pending">
+          <div class="step-icon">3</div>
+          <div>Analisando detecção de IA</div>
+        </div>
+        <div class="step-item step-pending">
+          <div class="step-icon">4</div>
+          <div>Finalizando resultados</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

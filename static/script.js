@@ -280,3 +280,40 @@ document.addEventListener('DOMContentLoaded', function() {
   LoadingManager.init();
   setupFormSubmission();
 });
+
+// Função para expandir/contrair texto dos trechos similares
+function toggleText(textNumber, itemIndex) {
+  const truncatedElement = document.getElementById(`text${textNumber}-truncated-${itemIndex}`);
+  const fullElement = document.getElementById(`text${textNumber}-full-${itemIndex}`);
+  const button = event.target.closest('.expand-btn');
+  
+  if (!truncatedElement || !fullElement || !button) return;
+  
+  const expandText = button.querySelector('.expand-text');
+  const collapseText = button.querySelector('.collapse-text');
+  const expandIcon = button.querySelector('.expand-icon');
+  const collapseIcon = button.querySelector('.collapse-icon');
+  
+  // Verificar estado atual
+  const isExpanded = fullElement.style.display !== 'none';
+  
+  if (isExpanded) {
+    // Contrair
+    truncatedElement.style.display = 'block';
+    fullElement.style.display = 'none';
+    expandText.style.display = 'inline';
+    collapseText.style.display = 'none';
+    expandIcon.style.display = 'inline';
+    collapseIcon.style.display = 'none';
+    button.classList.remove('expanded');
+  } else {
+    // Expandir
+    truncatedElement.style.display = 'none';
+    fullElement.style.display = 'block';
+    expandText.style.display = 'none';
+    collapseText.style.display = 'inline';
+    expandIcon.style.display = 'none';
+    collapseIcon.style.display = 'inline';
+    button.classList.add('expanded');
+  }
+}

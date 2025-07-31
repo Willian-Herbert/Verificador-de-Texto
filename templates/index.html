@@ -229,19 +229,64 @@
             <h3>
               <i class="fas fa-bolt"></i> Trechos mais similares:
             </h3>
-            {% for sim, s1, s2 in trechos %}
+            {% for item in trechos %}
+              {% if item|length == 8 %}
+                {% set sim, s1_truncado, s2_truncado, explicacao, s1_completo, s2_completo, foi_truncado1, foi_truncado2 = item %}
+              {% elif item|length == 6 %}
+                {% set sim, s1_truncado, s2_truncado, explicacao, s1_completo, s2_completo = item %}
+                {% set foi_truncado1 = (s1_truncado != s1_completo) %}
+                {% set foi_truncado2 = (s2_truncado != s2_completo) %}
+              {% elif item|length == 4 %}
+                {% set sim, s1_truncado, s2_truncado, explicacao = item %}
+                {% set s1_completo = s1_truncado %}
+                {% set s2_completo = s2_truncado %}
+                {% set foi_truncado1 = false %}
+                {% set foi_truncado2 = false %}
+              {% else %}
+                {% set sim, s1_truncado, s2_truncado = item %}
+                {% set explicacao = "Similaridade detectada pelo algoritmo" %}
+                {% set s1_completo = s1_truncado %}
+                {% set s2_completo = s2_truncado %}
+                {% set foi_truncado1 = false %}
+                {% set foi_truncado2 = false %}
+              {% endif %}
               <div class="similar-item">
                 <div class="similarity-header">
                   <h4>Trecho {{ loop.index }}: {{ (sim * 100) | round(1) }}% de similaridade</h4>
+                  <div class="similarity-explanation">
+                    <i class="fas fa-lightbulb"></i> <strong>Por que foi escolhido:</strong> {{ explicacao }}
+                  </div>
                 </div>
                 <div class="text-comparison">
                   <div class="text-block">
                     <div class="text-label">Texto 1</div>
-                    <div>{{ s1 }}</div>
+                    <div class="text-content" id="text1-{{ loop.index }}">
+                      <div class="text-truncated" id="text1-truncated-{{ loop.index }}">{{ s1_truncado }}</div>
+                      <div class="text-full" id="text1-full-{{ loop.index }}" style="display: none;">{{ s1_completo }}</div>
+                    </div>
+                    {% if foi_truncado1 %}
+                      <button class="expand-btn" onclick="toggleText(1, {{ loop.index }})">
+                        <span class="expand-text">Ver completo</span>
+                        <span class="collapse-text" style="display: none;">Ver menos</span>
+                        <i class="fas fa-chevron-down expand-icon"></i>
+                        <i class="fas fa-chevron-up collapse-icon" style="display: none;"></i>
+                      </button>
+                    {% endif %}
                   </div>
                   <div class="text-block">
                     <div class="text-label">Texto 2</div>
-                    <div>{{ s2 }}</div>
+                    <div class="text-content" id="text2-{{ loop.index }}">
+                      <div class="text-truncated" id="text2-truncated-{{ loop.index }}">{{ s2_truncado }}</div>
+                      <div class="text-full" id="text2-full-{{ loop.index }}" style="display: none;">{{ s2_completo }}</div>
+                    </div>
+                    {% if foi_truncado2 %}
+                      <button class="expand-btn" onclick="toggleText(2, {{ loop.index }})">
+                        <span class="expand-text">Ver completo</span>
+                        <span class="collapse-text" style="display: none;">Ver menos</span>
+                        <i class="fas fa-chevron-down expand-icon"></i>
+                        <i class="fas fa-chevron-up collapse-icon" style="display: none;"></i>
+                      </button>
+                    {% endif %}
                   </div>
                 </div>
               </div>

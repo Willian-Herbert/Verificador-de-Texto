@@ -533,6 +533,26 @@ body {
   font-size: 1.2rem;
 }
 
+.similarity-explanation {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: #0369a1;
+  line-height: 1.5;
+}
+
+.similarity-explanation i {
+  color: #f59e0b;
+  margin-right: 0.5rem;
+}
+
+.similarity-explanation strong {
+  color: #0c4a6e;
+}
+
 .text-comparison {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -568,6 +588,66 @@ body {
 .text-label::before {
   content: "📄";
   font-size: 1rem;
+}
+
+/* Botões de expandir/contrair texto */
+.expand-btn {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.expand-btn:hover {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #1e40af 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+}
+
+.expand-btn:active {
+  transform: translateY(0);
+}
+
+.expand-btn.expanded {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.expand-btn.expanded:hover {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+}
+
+.text-content {
+  line-height: 1.6;
+}
+
+.text-full {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.text-truncated {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .text-block > div:last-child {
@@ -1171,6 +1251,18 @@ body {
   
   .similarity-header h4 {
     font-size: 1rem;
+  }
+  
+  .similarity-explanation {
+    font-size: 0.85rem;
+    padding: 0.6rem 0.8rem;
+    margin-top: 0.5rem;
+  }
+  
+  .expand-btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    min-width: 100px;
   }
 }
 

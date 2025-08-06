@@ -533,26 +533,6 @@ body {
   font-size: 1.2rem;
 }
 
-.similarity-explanation {
-  margin-top: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 1px solid #bae6fd;
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  color: #0369a1;
-  line-height: 1.5;
-}
-
-.similarity-explanation i {
-  color: #f59e0b;
-  margin-right: 0.5rem;
-}
-
-.similarity-explanation strong {
-  color: #0c4a6e;
-}
-
 .text-comparison {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1251,12 +1231,6 @@ body {
   
   .similarity-header h4 {
     font-size: 1rem;
-  }
-  
-  .similarity-explanation {
-    font-size: 0.85rem;
-    padding: 0.6rem 0.8rem;
-    margin-top: 0.5rem;
   }
   
   .expand-btn {

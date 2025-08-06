@@ -230,21 +230,22 @@
               <i class="fas fa-bolt"></i> Trechos mais similares:
             </h3>
             {% for item in trechos %}
-              {% if item|length == 8 %}
-                {% set sim, s1_truncado, s2_truncado, explicacao, s1_completo, s2_completo, foi_truncado1, foi_truncado2 = item %}
-              {% elif item|length == 6 %}
-                {% set sim, s1_truncado, s2_truncado, explicacao, s1_completo, s2_completo = item %}
+              {% if item|length == 7 %}
+                {% set sim, s1_truncado, s2_truncado, s1_completo, s2_completo, foi_truncado1, foi_truncado2 = item %}
+              {% elif item|length == 5 %}
+                {% set sim, s1_truncado, s2_truncado, s1_completo, s2_completo = item %}
                 {% set foi_truncado1 = (s1_truncado != s1_completo) %}
                 {% set foi_truncado2 = (s2_truncado != s2_completo) %}
-              {% elif item|length == 4 %}
-                {% set sim, s1_truncado, s2_truncado, explicacao = item %}
+              {% elif item|length == 3 %}
+                {% set sim, s1_truncado, s2_truncado = item %}
                 {% set s1_completo = s1_truncado %}
                 {% set s2_completo = s2_truncado %}
                 {% set foi_truncado1 = false %}
                 {% set foi_truncado2 = false %}
               {% else %}
-                {% set sim, s1_truncado, s2_truncado = item %}
-                {% set explicacao = "Similaridade detectada pelo algoritmo" %}
+                {% set sim = item[0] if item|length > 0 else 0 %}
+                {% set s1_truncado = item[1] if item|length > 1 else "Sem conteúdo" %}
+                {% set s2_truncado = item[2] if item|length > 2 else "Sem conteúdo" %}
                 {% set s1_completo = s1_truncado %}
                 {% set s2_completo = s2_truncado %}
                 {% set foi_truncado1 = false %}
@@ -253,9 +254,6 @@
               <div class="similar-item">
                 <div class="similarity-header">
                   <h4>Trecho {{ loop.index }}: {{ (sim * 100) | round(1) }}% de similaridade</h4>
-                  <div class="similarity-explanation">
-                    <i class="fas fa-lightbulb"></i> <strong>Por que foi escolhido:</strong> {{ explicacao }}
-                  </div>
                 </div>
                 <div class="text-comparison">
                   <div class="text-block">

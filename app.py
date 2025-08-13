@@ -508,7 +508,7 @@ def calcular_similaridade(texto1, texto2):
         tracker.complete(f"ERRO: {str(e)}")
         return 0.0
 
-def encontrar_trechos_similares(texto1, texto2, top_n=3, limite_caracteres=400, bloco_palavras=100):
+def encontrar_trechos_similares(texto1, texto2, top_n=3, limite_caracteres=800, bloco_palavras=100):
     """Busca de trechos similares com texto original para exibição e texto filtrado para análise"""
     tracker = ProcessTracker("BUSCA DE TRECHOS SIMILARES", 6)
     
@@ -555,7 +555,7 @@ def encontrar_trechos_similares(texto1, texto2, top_n=3, limite_caracteres=400, 
     
     if not blocos1_filtrados or not blocos2_filtrados:
         tracker.complete("ERRO: Blocos filtrados insuficientes para análise")
-        return [(0.0, "Sem trecho suficiente", "Sem trecho suficiente", "Sem trecho suficiente", "Sem trecho suficiente", False, False)] * top_n
+        return [(0.0, "Sem trecho similar ou suficiente", "Sem trecho similar ou suficiente", "Sem trecho similar ou suficiente", "Sem trecho similar ou suficiente", False, False)] * top_n
 
     # Otimização crítica: limitar número de blocos para textos muito grandes
     max_blocos = 150  # Reduzido um pouco para acomodar blocos maiores
@@ -596,7 +596,7 @@ def encontrar_trechos_similares(texto1, texto2, top_n=3, limite_caracteres=400, 
         
         if vetores.shape[1] == 0:
             tracker.complete("ERRO: Vetores vazios")
-            return [(0.0, "Sem trecho suficiente", "Sem trecho suficiente", "Sem trecho suficiente", "Sem trecho suficiente", False, False)] * top_n
+            return [(0.0, "Sem trecho similar ou suficiente", "Sem trecho similar ou suficiente", "Sem trecho similar ou suficiente", "Sem trecho similar ou suficiente", False, False)] * top_n
             
         n_blocos1 = len(blocos1_filtrados)
         
@@ -640,7 +640,7 @@ def encontrar_trechos_similares(texto1, texto2, top_n=3, limite_caracteres=400, 
         
         # Preencher se necessário
         while len(pares_similares) < top_n:
-            pares_similares.append((0.0, "Sem trecho suficiente", "Sem trecho suficiente"))
+            pares_similares.append((0.0, "Sem trecho similar ou suficiente", "Sem trecho similar ou suficiente"))
 
         # Truncar trechos para exibição, preservando palavras completas e pontuação
         resultado = []
@@ -683,13 +683,18 @@ def encontrar_trechos_similares(texto1, texto2, top_n=3, limite_caracteres=400, 
             resultado.append((sim, s1_truncado, s2_truncado, s1_original, s2_original, s1_foi_truncado, s2_foi_truncado))
         
         melhor_similaridade = resultado[0][0] if resultado else 0.0
-        tracker.complete(f"✅ ULTRA-OTIMIZADO! Melhor similaridade: {melhor_similaridade:.3f}")
+        tracker.complete(f"✅ Melhor similaridade: {melhor_similaridade:.3f}")
         
         return resultado
         
     except Exception as e:
-        tracker.complete(f"ERRO: {str(e)}")
-        return [(0.0, "Sem trecho suficiente", "Sem trecho suficiente", "Sem trecho suficiente", "Sem trecho suficiente", False, False)] * top_n
+        erro_msg = f"ERRO na busca de trechos similares: {str(e)}"
+        tracker.complete(erro_msg)
+        # Imprimir erro detalhado no console para debug
+        log_step("❌ ERRO CRÍTICO na busca de trechos", f"Detalhes: {str(e)}")
+        # Retornar mensagem de erro mais específica
+        mensagem_erro = f"Erro ao buscar trechos similares: {str(e)[:100]}..."
+        return [(0.0, mensagem_erro, mensagem_erro, mensagem_erro, mensagem_erro, False, False)] * top_n
 
 def gerar_pdf(resultado, trechos):
     """Geração otimizada de PDF"""
